@@ -342,11 +342,11 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   vy=0.05/(3*ca)*(-2*w1+w2+w3);
   position_x=position_x+(sqrt(3))/(3*ca)*0.05*TICK2RAD *(last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
   position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(2*last_diff_tick[FIRST]-last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
-  if(time_1* 0.001>10.2)
-      {xd=xd+step_time* 0.001*0.01;vd=0.01;}
-  else if(time_1* 0.001>10)
+  if(time_1* 0.001>5.2)
+      {xd=xd+step_time* 0.001*0.05;vd=0.01;}
+  else if(time_1* 0.001>5)
       {xd=-0.05;vd=-0.05;}
-  if (xd>=0.3) {xd =0.3;vd=0;}
+  if (xd>=0.3) {xd =0.4;vd=0;}
   if ((time_1-tTime)*0.001>0.5 )
   {
     tTime=time_1;
