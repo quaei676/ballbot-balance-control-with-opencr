@@ -50,6 +50,7 @@ double vy               =0.0;
 double xd               =0.0;
 double yd               =0.0;
 double vd               =0.0;
+double sumx_err =0.0;
 /////////Matrix define///////////////
 #include <MatrixMath.h>
 #define N  (10)
@@ -111,7 +112,7 @@ void setup()
   imu_pitch_init=IMU.rpy[1];
   // Start Dynamixel Control Interrupt
   startDynamixelControlInterrupt();
-  
+  Serial.setTimeout(1); 
 }
 
 void loop()
@@ -236,12 +237,23 @@ void controlOmni()
   }
    else
    {
-    Kp=9.5;Ki=1.5;
+    Kp=11.5;Ki=1.5;
+    //Kp=21.5;Ki=2.5;
     //4.5
     //Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(15.5*(position_x-xd)))+BLS_x((0.0-IMU.rpy[0])*M_PI /180,0.1*IMU.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
     //Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(15.5*(position_y-yd)))+BLS_y((0.0-IMU.rpy[1])*M_PI /180,0.1*IMU.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
-    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.2*(position_x-xd))+(0.0*(vx-0.005)));
-    Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(4.2*(position_y-yd))+(0.0*(vy-0.0)));    
+    if(Serial.available())
+    {
+      xd =xd+ Serial.parseFloat();
+    }
+    //6.7
+    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+0.1*sumx_err);
+    Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(6.7*(position_y-yd))+(0.0*(vy-0.0)));    
+    
+    if(sumx_err>20)
+    {sumx_err=20;}
+    if(pow(position_x-xd,2)<0.000025)
+    {sumx_err=sumx_err/2;}
     /*Serial.print(position_x);
     Serial.print(" ");
     Serial.print(position_y);
@@ -342,11 +354,12 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   vy=0.05/(3*ca)*(-2*w1+w2+w3);
   position_x=position_x+(sqrt(3))/(3*ca)*0.05*TICK2RAD *(last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
   position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(2*last_diff_tick[FIRST]-last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
-  if(time_1* 0.001>5.2)
+  sumx_err=(sumx_err+(position_x-xd))*step_time*0.001/2;
+  /*if(time_1* 0.001>5.2)
       {xd=xd+step_time* 0.001*0.05;vd=0.01;}
   else if(time_1* 0.001>5)
       {xd=-0.05;vd=-0.05;}
-  if (xd>=0.3) {xd =0.3;vd=0;}
+  if (xd>=0.3) {xd =0.3;vd=0;}*/
   if ((time_1-tTime)*0.001>0.5 )
   {
     tTime=time_1;
