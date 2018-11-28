@@ -240,8 +240,8 @@ void controlOmni()
     //4.5
     //Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(15.5*(position_x-xd)))+BLS_x((0.0-IMU.rpy[0])*M_PI /180,0.1*IMU.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
     //Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(15.5*(position_y-yd)))+BLS_y((0.0-IMU.rpy[1])*M_PI /180,0.1*IMU.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
-    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.7*(position_x-xd))+(0.0*(vx-0.005)));
-    Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(3.7*(position_y-yd))+(0.0*(vy-0.0)));    
+    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.2*(position_x-xd))+(0.0*(vx-0.005)));
+    Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(4.2*(position_y-yd))+(0.0*(vy-0.0)));    
     /*Serial.print(position_x);
     Serial.print(" ");
     Serial.print(position_y);
@@ -346,7 +346,7 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
       {xd=xd+step_time* 0.001*0.05;vd=0.01;}
   else if(time_1* 0.001>5)
       {xd=-0.05;vd=-0.05;}
-  if (xd>=0.3) {xd =0.4;vd=0;}
+  if (xd>=0.3) {xd =0.3;vd=0;}
   if ((time_1-tTime)*0.001>0.5 )
   {
     tTime=time_1;
