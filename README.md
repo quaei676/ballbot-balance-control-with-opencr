@@ -6,7 +6,7 @@ https://github.com/ROBOTIS-GIT/OpenCR/tree/master/arduino/opencr_arduino/opencr/
 The position control has not been successed because it will be slipping.  
 I want to solve the problem of slipping.  
 Please email me if you have any suggestions.  
-quaei676@gmail.com
+quaei676@gmail.com  
 experment gif:  
 ![image](https://github.com/quaei676/ballbot-balance-control-with-opencr/blob/ros2/VID_20181223_173748.gif)  
 ![image](https://github.com/quaei676/ballbot-balance-control-with-opencr/blob/ros2/VID_20181221_222534.gif)  
