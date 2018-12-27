@@ -247,7 +247,7 @@ void controlOmni()
       xd =xd+ Serial.parseFloat();
     }
     //6.7
-    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+0.1*sumx_err);
+    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+1.7*sumx_err);
     Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(6.7*(position_y-yd))+(0.0*(vy-0.0)));    
     
     if(sumx_err>20)
@@ -354,7 +354,7 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   vy=0.05/(3*ca)*(-2*w1+w2+w3);
   position_x=position_x+(sqrt(3))/(3*ca)*0.05*TICK2RAD *(last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
   position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(2*last_diff_tick[FIRST]-last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
-  sumx_err=(sumx_err+(position_x-xd))*step_time*0.001/2;
+  sumx_err=sumx_err+(position_x-xd)*step_time*0.001;
   /*if(time_1* 0.001>5.2)
       {xd=xd+step_time* 0.001*0.05;vd=0.01;}
   else if(time_1* 0.001>5)
