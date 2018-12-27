@@ -1,5 +1,6 @@
 # ballbot-balance-control-with-opencr
 blancecontrol no ros  
+ros2 in branch ros2
 The position control has not been successed because it will be slipping.  
 I want to solve the problem of slipping.
 experment gif:  
