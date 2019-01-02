@@ -33,7 +33,7 @@
 
 #define RPM_CONSTANT_VALUE              0.229
 
-#define CONTROL_PERIOD                  10
+#define CONTROL_PERIOD                  500
 
 #define MAX_LINEAR_VELOCITY             0.22   // m/s
 #define MAX_ANGULAR_VELOCITY            2.84   // rad/s
@@ -43,7 +43,7 @@
 #define SCALE_VELOCITY_LINEAR_X         1
 #define SCALE_VELOCITY_LINEAR_Y         1
 #define SCALE_VELOCITY_ANGULAR_Z        1
-
+#define CONTROL_MOTOR_SPEED_FREQUENCY   100   //hz
 #define OMNIWHEEL_NUM                   3
 #define LIMIT_X_MAX_VALUE               1023
 
@@ -60,7 +60,33 @@
 #define sa 0.7071
 #define ca 0.7071
 
-
+#define rb 0.14
+#define rw 0.05
+#define c_ 0.28
+#define Gama1 2.0
+#define Gama2 1.35//1.35//0.8//
+#define k1 8//10
+#define kbeta  1.3//1.3//
+#define Ib 0.0525
+#define IB 0.0152
+#define mb 6.577
+#define mB 2.54
+#define alpha Ib+(mb+mB)*rb*rb
+#define beta_ mB*rb*0.185
+#define gama mB*0.185*0.185+IB
+double mx12;
+double mx22;
+double sx=0;
+double cmcgx;
+double my12;
+double my22;
+double sy=0;
+double cmcgy;
+double sigma_1x;
+double sigma_2x;
+double sigma_1y;
+double sigma_2y;
+static uint32_t tTimer[10];
 /*******************************************************************************
 * Update Joint State
 *******************************************************************************/

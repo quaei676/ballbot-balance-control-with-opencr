@@ -81,7 +81,7 @@ mtx_type maxVal = 2;  // maxValimum random matrix entry range
 #define eta 0.0001
 double Kp=23.5;
 double Ki=3.5;
-float BLS_limit = 0.5;
+float BLS_limit = 0.25;
 void setup()
 {
   // Initialize matrices
@@ -111,22 +111,26 @@ void setup()
   imu_roll_init=IMU.rpy[0];
   imu_pitch_init=IMU.rpy[1];
   // Start Dynamixel Control Interrupt
-  startDynamixelControlInterrupt();
+  //startDynamixelControlInterrupt();
   Serial.setTimeout(1); 
 }
 
 void loop()
 {
-
-  //receiveRemoteControl();
+  uint32_t t = millis();
+  if ((t-tTimer[0]) >= (1000 / CONTROL_MOTOR_SPEED_FREQUENCY))
+  {
+    controlOmni();
+    tTimer[0] = t;
+  }
 }
 
 void startDynamixelControlInterrupt()
 {
-  Timer.stop();
+  Timer.pause();
   Timer.setPeriod(CONTROL_PERIOD);           // in microseconds
   Timer.attachInterrupt(controlOmni);
-  Timer.start();
+  Timer.refresh();
   Timer.resume();
 }
 
@@ -209,7 +213,7 @@ void receiveRemoteControl(void)
 * Control onmi speed
 *******************************************************************************/
 void controlOmni()
-{
+{ 
   bool dxl_comm_result = false;
   int64_t wheel_value[OMNIWHEEL_NUM] = {0.0, 0.0, 0.0};
   double wheel_angular_velocity[OMNIWHEEL_NUM] = {0.0, 0.0, 0.0};
@@ -234,24 +238,26 @@ void controlOmni()
         imu_roll_init=0;
         imu_pitch_init=0;
       }
+      i=1;
   }
    else
    {
-    Kp=11.5;Ki=1.5;
+
     //Kp=21.5;Ki=2.5;
     //4.5
-    //Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(15.5*(position_x-xd)))+BLS_x((0.0-IMU.rpy[0])*M_PI /180,0.1*IMU.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
-    //Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(15.5*(position_y-yd)))+BLS_y((0.0-IMU.rpy[1])*M_PI /180,0.1*IMU.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
+
     if(Serial.available())
     {
       xd =xd+ Serial.parseFloat();
     }
     //6.7
-    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+0.1*sumx_err);
+    Tx=((-Kp*((IMU.rpy[0]-0.0)*M_PI /180))+(-Ki*IMU.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+1.7*sumx_err);
     Ty=((-Kp*(IMU.rpy[1]-0.0)*M_PI /180)+(-Ki*IMU.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(6.7*(position_y-yd))+(0.0*(vy-0.0)));    
     
-    if(sumx_err>20)
-    {sumx_err=20;}
+    if(sumx_err>0.2)
+    {sumx_err=0.2;}
+    else if(sumx_err<-0.2)
+    {sumx_err=-0.2;}
     if(pow(position_x-xd,2)<0.000025)
     {sumx_err=sumx_err/2;}
     /*Serial.print(position_x);
@@ -276,11 +282,13 @@ void controlOmni()
   Serial.print(" Vy : "); Serial.print(goal_linear_y_velocity);
   Serial.print(" W : "); Serial.println(goal_angular_velocity);*/
 #endif
-
+  
   dxl_comm_result = motor_driver.controlMotor((int64_t)wheel_value[0], (int64_t)wheel_value[1], (int64_t)wheel_value[2]);
   if (dxl_comm_result == false)
     return;
+  
    }
+   
 }
 /*******************************************************************************
 * Publish msgs (sensor_state: bumpers, cliffs, buttons, encoders, battery)
@@ -350,22 +358,28 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   w2=TICK2RAD * (double)last_diff_tick[SECOND]/((double)(step_time * 0.001));
   w3=TICK2RAD * (double)last_diff_tick[THIRD]/((double)(step_time * 0.001));
   
-  vx=sqrt(3)/(3*ca)*0.05*(w2-w3);
-  vy=0.05/(3*ca)*(-2*w1+w2+w3);
+  vx=sqrt(3)/(3*ca)*0.05*(w2-w3)*0.62;
+  vy=0.05/(3*ca)*(-2*w1+w2+w3)*0.62;
   position_x=position_x+(sqrt(3))/(3*ca)*0.05*TICK2RAD *(last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
   position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(2*last_diff_tick[FIRST]-last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
-  sumx_err=(sumx_err+(position_x-xd))*step_time*0.001/2;
+  sumx_err=sumx_err+(position_x-xd)*step_time*0.001;
   /*if(time_1* 0.001>5.2)
       {xd=xd+step_time* 0.001*0.05;vd=0.01;}
   else if(time_1* 0.001>5)
       {xd=-0.05;vd=-0.05;}
-  if (xd>=0.3) {xd =0.3;vd=0;}*/
+  if (xd>=0.4) {xd =0.4;vd=0.05;}*/
   if ((time_1-tTime)*0.001>0.5 )
   {
     tTime=time_1;
-    Serial.print("\n x : "); Serial.print(position_x);
-    Serial.print("\n xd : "); Serial.print(xd);
-    Serial.print("\n y : "); Serial.print(position_y);
+    Serial.print(position_x);
+    Serial.print("\t"); Serial.print(position_y);
+    //Serial.print("\t"); Serial.print(sx);
+    //Serial.print("\t"); Serial.print(sy);
+    Serial.print("\t"); Serial.print(xd);
+    Serial.print("\t"); Serial.print(vx);
+    Serial.print("\t"); Serial.print(IMU.rpy[0]);
+    Serial.print("\t"); Serial.print(IMU.rpy[1]);
+    Serial.print("\n");
   }
   //int32_t *dxl_present_position = 0;
   //dxl_present_position=dxl_wb.syncRead("Present_Position");

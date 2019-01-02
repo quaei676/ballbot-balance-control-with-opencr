@@ -79,11 +79,11 @@ bool Turtlebot3MotorDriver::setTorque(uint8_t id, bool onoff)
   dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, ADDR_X_TORQUE_ENABLE, onoff, &dxl_error);
   if(dxl_comm_result != COMM_SUCCESS)
   {
-    packetHandler_->printTxRxResult(dxl_comm_result);
+    packetHandler_->getTxRxResult(dxl_comm_result);
   }
   else if(dxl_error != 0)
   {
-    packetHandler_->printRxPacketError(dxl_error);
+    packetHandler_->getRxPacketError(dxl_error);
   }
 }
 
@@ -109,7 +109,7 @@ bool Turtlebot3MotorDriver::readEncoder(int32_t &first_wheel_value, int32_t &sec
   // Syncread present position
   dxl_comm_result = groupSyncReadEncoder_->txRxPacket();
   if (dxl_comm_result != COMM_SUCCESS)
-    packetHandler_->printTxRxResult(dxl_comm_result);
+    packetHandler_->getTxRxResult(dxl_comm_result);
 
   // Check if groupSyncRead data of Dynamixels are available
   dxl_getdata_result = groupSyncReadEncoder_->isAvailable(first_wheel_id_, ADDR_X_PRESENT_POSITION, LEN_X_PRESENT_POSITION);
@@ -162,7 +162,7 @@ bool Turtlebot3MotorDriver::controlMotor(int64_t first_wheel_value, int64_t seco
   dxl_comm_result_ = groupSyncWriteVelocity_->txPacket();
   if (dxl_comm_result_ != COMM_SUCCESS)
   {
-    packetHandler_->printTxRxResult(dxl_comm_result_);
+    packetHandler_->getTxRxResult(dxl_comm_result_);
     return false;
   }
 
