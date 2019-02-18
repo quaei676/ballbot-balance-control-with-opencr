@@ -90,22 +90,22 @@ void setup()
   // Initialize matrices
   for (int i = 0; i < N; i++)
   {
-    w1_x[0][i] = random(maxVal) - maxVal / 2.0f; 
-    w1_x[1][i] = random(maxVal) - maxVal / 2.0f; 
-    b1_x[0][i] = random(maxVal) - maxVal / 2.0f;
-    bf_x[0][i] = random(maxVal) - maxVal / 2.0f;
-    wz_x[i][0] = random(maxVal) - maxVal / 2.0f;
-    wh_x[i][0] = random(maxVal) - maxVal / 2.0f;
-    w1_y[0][i] = random(maxVal) - maxVal / 2.0f; 
-    w1_y[1][i] = random(maxVal) - maxVal / 2.0f; 
-    b1_y[0][i] = random(maxVal) - maxVal / 2.0f;
-    bf_y[0][i] = random(maxVal) - maxVal / 2.0f;
-    wz_y[i][0] = random(maxVal) - maxVal / 2.0f;
-    wh_y[i][0] = random(maxVal) - maxVal / 2.0f;
+    w1_x[0][i] = random(0, maxVal)  / maxVal; 
+    w1_x[1][i] = random(0, maxVal)  / maxVal; 
+    b1_x[0][i] = random(0, maxVal)  / maxVal;
+    bf_x[0][i] = random(0, maxVal)  / maxVal;
+    wz_x[i][0] = random(0, maxVal)  / maxVal;
+    wh_x[i][0] = random(0, maxVal)  / maxVal;
+    w1_y[0][i] = random(0, maxVal)  / maxVal; 
+    w1_y[1][i] = random(0, maxVal)  / maxVal; 
+    b1_y[0][i] = random(0, maxVal)  / maxVal;
+    bf_y[0][i] = random(0, maxVal)  / maxVal;
+    wz_y[i][0] = random(0, maxVal)  / maxVal;
+    wh_y[i][0] = random(0, maxVal)  / maxVal;
     for (int j = 0; j < N; j++)
     {
-      wf_x[i][j] = random(maxVal) - maxVal / 2.0f; 
-      wf_y[i][j] = random(maxVal) - maxVal / 2.0f; 
+      wf_x[i][j] = random(0, maxVal)  / maxVal; 
+      wf_y[i][j] = random(0, maxVal)  / maxVal; 
     }
   }
   // Setting for Dynamixel motors
@@ -286,8 +286,8 @@ void controlOmni()
     /*Tx=-3.5*(position_x-0.5);
     Ty=0;*/
     Tz=0;
-    wheel_angular_velocity[0] =(2.0*cb)/(3.0*ca)*Ty-(2.0*sb)/(3.0*ca)*Tx+1/(3.0*sa)*Tz;
-    wheel_angular_velocity[1] = (-cb+sqrt(3)*sb)/(3*ca)*Ty+(sb+sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz; 
+    wheel_angular_velocity[1] =(2.0*cb)/(3.0*ca)*Ty-(2.0*sb)/(3.0*ca)*Tx+1/(3.0*sa)*Tz;
+    wheel_angular_velocity[0] = (-cb+sqrt(3)*sb)/(3*ca)*Ty+(sb+sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz; 
     wheel_angular_velocity[2] = -(cb+sqrt(3)*sb)/(3*ca)*Ty+(sb-sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz;
     for (int id = 0; id < OMNIWHEEL_NUM; id++)
     {
@@ -373,14 +373,14 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   unsigned long time_1=     time_now - init_time       ;
   prev_update_time = time_now;
   //if(sqrt(pow(xd-position_x,2)+pow(yd-position_y,2))<=0.005)
-  w1=TICK2RAD * (double)last_diff_tick[FIRST]/((double)(step_time * 0.001));
-  w2=TICK2RAD * (double)last_diff_tick[SECOND]/((double)(step_time * 0.001));
+  w2=TICK2RAD * (double)last_diff_tick[FIRST]/((double)(step_time * 0.001));
+  w1=TICK2RAD * (double)last_diff_tick[SECOND]/((double)(step_time * 0.001));
   w3=TICK2RAD * (double)last_diff_tick[THIRD]/((double)(step_time * 0.001));
   
   vx=sqrt(3)/(3*ca)*0.05*(w2-w3)*0.62;
   vy=0.05/(3*ca)*(-2*w1+w2+w3)*0.62;
-  position_x=position_x+(sqrt(3))/(3*ca)*0.05*TICK2RAD *(last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
-  position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(2*last_diff_tick[FIRST]-last_diff_tick[SECOND]-last_diff_tick[THIRD])*0.62;
+  position_x=position_x+(sqrt(3))/(3*ca)*0.05*TICK2RAD *(last_diff_tick[FIRST]-last_diff_tick[THIRD])*0.62;
+  position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(2*last_diff_tick[SECOND]-last_diff_tick[FIRST]-last_diff_tick[THIRD])*0.62;
   sumx_err=sumx_err+(position_x-xd)*step_time*0.001;
   odom_pose[0]=position_x;
   odom_pose[1]=position_y;
