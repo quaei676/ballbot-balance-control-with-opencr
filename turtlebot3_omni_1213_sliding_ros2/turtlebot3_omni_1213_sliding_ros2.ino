@@ -265,13 +265,11 @@ void controlOmni()
     //vx=-vx;position_x=-position_x;
     //vy=-vy;position_y=-position_y;
     //vx=0;vy=0;position_x=0;position_y=0;
-
-    Kp=11.5;Ki=1.5;     
-
-    //Kp=21.5;Ki=2.5;
-    //4.5
-    Tx=((-Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(-Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(15.5*(position_x-xd)))+BLS_x((0.0-sensors.imu_.rpy[0])*M_PI /180,0.1*sensors.imu_.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
-    Ty=((-Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(-Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(15.5*(position_y-yd)))+BLS_y((0.0-sensors.imu_.rpy[1])*M_PI /180,0.1*sensors.imu_.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
+    xd=position_x;yd=position_y;
+//    Kp=10.5;Ki=2.5;  
+    Kp=6.5;Ki=2.5;   
+    Tx=((Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.0*(vx-goal_velocity_from_cmd[0])/rb)+(3.0*(position_x-xd)/rb));//+BLS_x((0.0-sensors.imu_.rpy[0])*M_PI /180,0.1*sensors.imu_.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
+    Ty=-((Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(2.5*(vy-goal_velocity_from_cmd[1])/rb)+(3.0*(position_y-yd)/rb));//+BLS_y((0.0-sensors.imu_.rpy[1])*M_PI /180,0.1*sensors.imu_.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
     //6.7
     //Tx=((-Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(-Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+1.7*sumx_err);
     //Ty=((-Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(-Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(6.7*(position_y-yd))+(0.0*(vy-0.0)));    
@@ -555,4 +553,10 @@ void publishOdometry(nav_msgs::Odometry* msg, void* arg)
   msg->pose.pose.orientation.w = 0;
   msg->twist.twist.linear.x    = odom_vel[0];
   msg->twist.twist.linear.y    = odom_vel[2];
+}
+void subscribeCmdVel(geometry_msgs::Twist* msg, void* arg)
+{
+  (void)(arg);
+  goal_velocity_from_cmd[0]  = constrain(msg->linear.x,  MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
+  goal_velocity_from_cmd[1]  = constrain(msg->linear.y,  MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
 }

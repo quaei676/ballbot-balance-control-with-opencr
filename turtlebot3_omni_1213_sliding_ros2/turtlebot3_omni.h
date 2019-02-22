@@ -83,6 +83,7 @@
 
 #define MAX_LINEAR_VELOCITY             0.22   // m/s
 #define MAX_ANGULAR_VELOCITY            2.84   // rad/s
+#define MIN_LINEAR_VELOCITY             -MAX_LINEAR_VELOCITY 
 #define VELOCITY_LINEAR_X               0.01   // m/s
 #define VELOCITY_LINEAR_Y               0.01   // m/s
 #define VELOCITY_ANGULAR_Z              0.1    // rad/s
@@ -282,8 +283,8 @@ public:
     /*******************************************************************************
     * Subscriber
     *******************************************************************************/
-    /*cmd_vel_sub_       = this->createSubscriber<geometry_msgs::Twist>("cmd_vel", (ros2::CallbackFunc)subscribeCmdVel, NULL);
-    DEBUG_PRINT("\r\n [Subscriber Create]  /cmd_vel        : "); DEBUG_PRINT((cmd_vel_sub_!=NULL?"Success":"Fail")); DEBUG_PRINT(this->err_code);
+    cmd_vel_sub_       = this->createSubscriber<geometry_msgs::Twist>("cmd_vel", (ros2::CallbackFunc)subscribeCmdVel, NULL);
+    /*DEBUG_PRINT("\r\n [Subscriber Create]  /cmd_vel        : "); DEBUG_PRINT((cmd_vel_sub_!=NULL?"Success":"Fail")); DEBUG_PRINT(this->err_code);
 
     sound_sub_         = this->createSubscriber<turtlebot3_msgs::Sound>("sound", (ros2::CallbackFunc)subscribeSound, NULL);
     DEBUG_PRINT("\r\n [Subscriber Create]  /sound          : "); DEBUG_PRINT((sound_sub_!=NULL?"Success":"Fail")); DEBUG_PRINT(this->err_code);*/
@@ -307,7 +308,7 @@ private:
   //ros2::Publisher<sensor_msgs::MagneticField>*    mag_pub_;
 
   /* Subscriber Pointer */
-  //ros2::Subscriber<geometry_msgs::Twist>*         cmd_vel_sub_;
+  ros2::Subscriber<geometry_msgs::Twist>*         cmd_vel_sub_;
   //ros2::Subscriber<turtlebot3_msgs::Sound>*       sound_sub_;
   //ros2::Subscriber<std_msgs::Bool>*               motor_power_sub_;
   ros2::Subscriber<std_msgs::Empty>*              reset_sub_;
