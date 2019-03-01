@@ -11,3 +11,6 @@ experment gif:
 ![image](https://github.com/quaei676/ballbot-balance-control-with-opencr/blob/ros2/VID_20181223_173748.gif)  
 ![image](https://github.com/quaei676/ballbot-balance-control-with-opencr/blob/ros2/VID_20181221_222534.gif)  
 
+using ros2 turtlebot3_telop keyboard control
+![image](https://github.com/quaei676/ballbot-balance-control-with-opencr/blob/ros2/V_20190301_155723_OC0_Trim (Encoded).gif)
+
