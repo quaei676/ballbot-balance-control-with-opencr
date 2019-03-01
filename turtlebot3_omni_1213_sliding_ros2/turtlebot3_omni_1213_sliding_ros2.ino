@@ -17,8 +17,7 @@
 /* Authors: Yoonseok Pyo, Leon Jung, Darby Lim, HanCheol Cho */
 
 #include "turtlebot3_omni.h"
-#include <IMU.h>
-cIMU    IMU;
+
 /*******************************************************************************
 * Declaration for Hardware Timer (Interrupt control)
 *******************************************************************************/
@@ -116,7 +115,7 @@ void setup()
   sensors.updateIMU();
   imu_roll_init=sensors.imu_.rpy[0];
   imu_pitch_init=sensors.imu_.rpy[1];
-  ros2::init(NULL);
+  ros2::init(&RTPS_SERIAL);
   sprintf(imu_frame_id, "imu_link");
   sprintf(joint_state_header_frame_id, "base_link");
   sprintf(sensor_state_header_frame_id, "sensor_state");

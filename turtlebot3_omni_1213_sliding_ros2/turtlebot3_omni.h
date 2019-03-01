@@ -17,22 +17,24 @@
 /* Authors: Yoonseok Pyo, Leon Jung, Darby Lim, HanCheol Cho */
 //////////////////////////////////////////////////////////////
 #include <ros2arduino.h>
-#include <std_msgs/Bool.hpp>
-#include <std_msgs/Empty.hpp>
-//#include <std_msgs/Int32.hpp>
-#include <sensor_msgs/Imu.hpp>
-#include <sensor_msgs/JointState.hpp>
-//#include <sensor_msgs/BatteryState.hpp>
-//#include <sensor_msgs/MagneticField.hpp>
-//#include <geometry_msgs/Vector3.hpp>
-#include <geometry_msgs/Twist.hpp>
-//#include <tf/tf.hpp>
-//#include <tf/transform_broadcaster.hpp>
-#include <nav_msgs/Odometry.hpp>
+//#include <TurtleBot3_ROS2.h>
 
-#include <turtlebot3_msgs/SensorState.hpp>
-#include <turtlebot3_msgs/Sound.hpp>
-#include <turtlebot3_msgs/VersionInfo.hpp>
+//#include <std_msgs/Bool.hpp>
+//#include <std_msgs/Empty.hpp>
+////#include <std_msgs/Int32.hpp>
+//#include <sensor_msgs/Imu.hpp>
+//#include <sensor_msgs/JointState.hpp>
+////#include <sensor_msgs/BatteryState.hpp>
+////#include <sensor_msgs/MagneticField.hpp>
+////#include <geometry_msgs/Vector3.hpp>
+//#include <geometry_msgs/Twist.hpp>
+////#include <tf/tf.hpp>
+////#include <tf/transform_broadcaster.hpp>
+//#include <nav_msgs/Odometry.hpp>
+//
+//#include <turtlebot3_msgs/SensorState.hpp>
+//#include <turtlebot3_msgs/Sound.hpp>
+//#include <turtlebot3_msgs/VersionInfo.hpp>
 /////////////////////////////////////////////////////////////
 #include "turtlebot3_sensor.h"
 #include "turtlebot3_diagnosis.h"
@@ -52,7 +54,7 @@
 ///////////////////////////////////////////////////////////
 #define SENSOR_STATE_PUBLISH_FREQUENCY         30    //hz
 #define VERSION_INFORMATION_PUBLISH_FREQUENCY  1    //hz 
-#define IMU_PUBLISH_FREQUENCY                  200  //hz
+#define IMU_PUBLISH_FREQUENCY                  100  //hz
 #define CMD_VEL_PUBLISH_FREQUENCY              30   //hz
 #define ODOMETRY_PUBLISH_FREQUENCY             30  //hz
 #define JOINT_STATE_PUBLISH_FREQUENCY          30   //hz
