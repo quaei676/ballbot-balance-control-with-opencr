@@ -269,6 +269,7 @@ void controlOmni()
     Kp=6.5;Ki=2.5;   
     Tx=((Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.0*(vx-goal_velocity_from_cmd[0])/rb)+(3.0*(position_x-xd)/rb));//+BLS_x((0.0-sensors.imu_.rpy[0])*M_PI /180,0.1*sensors.imu_.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
     Ty=-((Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(2.5*(vy-goal_velocity_from_cmd[1])/rb)+(3.0*(position_y-yd)/rb));//+BLS_y((0.0-sensors.imu_.rpy[1])*M_PI /180,0.1*sensors.imu_.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
+    Tz=3.0*(sensors.imu_.rpy[2]-goal_velocity_from_cmd[1])*M_PI /180;
     //6.7
     //Tx=((-Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(-Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+1.7*sumx_err);
     //Ty=((-Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(-Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(6.7*(position_y-yd))+(0.0*(vy-0.0)));    
@@ -282,7 +283,7 @@ void controlOmni()
     Serial.print("\n");*/
     /*Tx=-3.5*(position_x-0.5);
     Ty=0;*/
-    Tz=0;
+//    Tz=0;
     wheel_angular_velocity[1] =(2.0*cb)/(3.0*ca)*Ty-(2.0*sb)/(3.0*ca)*Tx+1/(3.0*sa)*Tz;
     wheel_angular_velocity[0] = (-cb+sqrt(3)*sb)/(3*ca)*Ty+(sb+sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz; 
     wheel_angular_velocity[2] = -(cb+sqrt(3)*sb)/(3*ca)*Ty+(sb-sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz;
@@ -558,4 +559,5 @@ void subscribeCmdVel(geometry_msgs::Twist* msg, void* arg)
   (void)(arg);
   goal_velocity_from_cmd[0]  = constrain(msg->linear.x,  MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
   goal_velocity_from_cmd[1]  = constrain(msg->linear.y,  MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
+  goal_velocity_from_cmd[2]  = msg->angular.z;
 }

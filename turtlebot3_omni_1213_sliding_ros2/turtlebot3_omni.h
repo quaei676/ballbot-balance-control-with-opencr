@@ -175,7 +175,7 @@ Turtlebot3Diagnosis diagnosis;
 *******************************************************************************/
 float goal_velocity[2] = {0.0, 0.0};
 float goal_velocity_from_button[2] = {0.0, 0.0};
-float goal_velocity_from_cmd[2] = {0.0, 0.0};
+float goal_velocity_from_cmd[3] = {0.0, 0.0, 0.0};
 
 /*******************************************************************************
 * SoftwareTimer of Turtlebot3
