@@ -245,45 +245,16 @@ void controlOmni()
   Tx=Ty=0;
   if (init_imu==false)
   {   init_imu=true;
-      imu_count++;
-      if (imu_count>9500 && sensors.imu_.rpy[0]<4.0 && sensors.imu_.rpy[1]<4.0) 
-      {
-        i++;
-        imu_roll_init+=sensors.imu_.rpy[0];
-        imu_pitch_init+=sensors.imu_.rpy[1];
-      }
-      if (i==1)
-      {   
-        init_imu=true;
-        imu_roll_init=0;
-        imu_pitch_init=0;
-      }
+      imu_roll_init=0;
+      imu_pitch_init=0;
   }
    else
    {
-    //vx=-vx;position_x=-position_x;
-    //vy=-vy;position_y=-position_y;
-    //vx=0;vy=0;position_x=0;position_y=0;
-    xd=position_x;yd=position_y;
-//    Kp=10.5;Ki=2.5;  
+    //xd=position_x;yd=position_y;
     Kp=6.5;Ki=2.5;   
-    Tx=((Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.0*(vx-goal_velocity_from_cmd[0])/rb)+(3.0*(position_x-xd)/rb));//+BLS_x((0.0-sensors.imu_.rpy[0])*M_PI /180,0.1*sensors.imu_.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
-    Ty=-((Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(2.5*(vy-goal_velocity_from_cmd[1])/rb)+(3.0*(position_y-yd)/rb));//+BLS_y((0.0-sensors.imu_.rpy[1])*M_PI /180,0.1*sensors.imu_.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
+    Tx=((Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.0*(vx-goal_velocity_from_cmd[0])/rb)+(0.7*(position_x-xd)/rb));//+BLS_x((0.0-sensors.imu_.rpy[0])*M_PI /180,0.1*sensors.imu_.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
+    Ty=-((Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(3.0*(vy-goal_velocity_from_cmd[1])/rb)+(0.7*(position_y-yd)/rb));//+BLS_y((0.0-sensors.imu_.rpy[1])*M_PI /180,0.1*sensors.imu_.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
     Tz=4.5*(sensors.imu_.rpy[2]-goal_velocity_from_cmd[2])*M_PI /180;
-    //6.7
-    //Tx=((-Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(-Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(6.7*(position_x-xd))+(0.0*(vx-0.005))+1.7*sumx_err);
-    //Ty=((-Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(-Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(6.7*(position_y-yd))+(0.0*(vy-0.0)));    
-    if(sumx_err>20)
-    {sumx_err=20;}
-    if(pow(position_x-xd,2)<0.000025)
-    {sumx_err=sumx_err/2;}
-    /*Serial.print(position_x);
-    Serial.print(" ");
-    Serial.print(position_y);
-    Serial.print("\n");*/
-    /*Tx=-3.5*(position_x-0.5);
-    Ty=0;*/
-//    Tz=0;
     wheel_angular_velocity[1] =(2.0*cb)/(3.0*ca)*Ty-(2.0*sb)/(3.0*ca)*Tx+1/(3.0*sa)*Tz;
     wheel_angular_velocity[0] = (-cb+sqrt(3)*sb)/(3*ca)*Ty+(sb+sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz; 
     wheel_angular_velocity[2] = -(cb+sqrt(3)*sb)/(3*ca)*Ty+(sb-sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz;
@@ -378,7 +349,9 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   vx=sqrt(3)/(3*ca)*0.05*(w2-w3)*0.62;
   vy=0.05/(3*ca)*(-2*w1+w2+w3)*0.62;
   position_x=position_x+(sqrt(3))/(3*ca)*0.05*TICK2RAD *(last_diff_tick[FIRST]-last_diff_tick[THIRD])*0.62;
-  position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(2*last_diff_tick[SECOND]-last_diff_tick[FIRST]-last_diff_tick[THIRD])*0.62;
+  position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(-2*last_diff_tick[SECOND]+last_diff_tick[FIRST]+last_diff_tick[THIRD])*0.62;
+  xd=xd+(step_time*0.001)*goal_velocity_from_cmd[0];
+  yd=yd+(step_time*0.001)*goal_velocity_from_cmd[1];
   sumx_err=sumx_err+(position_x-xd)*step_time*0.001;
   odom_pose[0]=position_x;
   odom_pose[1]=position_y;
@@ -386,16 +359,7 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   odom_vel[0] = vx;
   odom_vel[1] = vy;
   odom_vel[2] = 0.0;
-  /*if(time_1* 0.001>5.2)
-      {xd=xd+step_time* 0.001*0.05;vd=0.01;}
-  else if(time_1* 0.001>5)
-      {xd=-0.05;vd=-0.05;}
-  if (xd>=0.3) {xd =0.3;vd=0;}*/
 
-  //int32_t *dxl_present_position = 0;
-  //dxl_present_position=dxl_wb.syncRead("Present_Position");
-  //Serial.print("Present_Position");
-  //Serial.print((double)(dxl_present_init_position-dxl_present_position[0])*0.001534); 
 }
 double BLS_x(double u1,double u2)
 {

@@ -54,14 +54,14 @@
 ///////////////////////////////////////////////////////////
 #define SENSOR_STATE_PUBLISH_FREQUENCY         30    //hz
 #define VERSION_INFORMATION_PUBLISH_FREQUENCY  1    //hz 
-#define IMU_PUBLISH_FREQUENCY                  100  //hz
+#define IMU_PUBLISH_FREQUENCY                  30  //hz
 #define CMD_VEL_PUBLISH_FREQUENCY              30   //hz
 #define ODOMETRY_PUBLISH_FREQUENCY             30  //hz
 #define JOINT_STATE_PUBLISH_FREQUENCY          30   //hz
 #define BATTERY_STATE_PUBLISH_FREQUENCY        30   //hz
 #define MAGNETIC_FIELD_PUBLISH_FREQUENCY       30   //hz
 
-#define CONTROL_MOTOR_SPEED_FREQUENCY          100   //hz
+#define CONTROL_MOTOR_SPEED_FREQUENCY          500   //hz
 #define DEBUG_LOG_FREQUENCY                    10   //hz
 ////////////////////////////////////////////////////////////
 #include <math.h>
