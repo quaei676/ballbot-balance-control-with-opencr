@@ -56,7 +56,7 @@
 #define VERSION_INFORMATION_PUBLISH_FREQUENCY  1    //hz 
 #define IMU_PUBLISH_FREQUENCY                  30  //hz
 #define CMD_VEL_PUBLISH_FREQUENCY              30   //hz
-#define ODOMETRY_PUBLISH_FREQUENCY             30  //hz
+#define ODOMETRY_PUBLISH_FREQUENCY             30    //hz
 #define JOINT_STATE_PUBLISH_FREQUENCY          30   //hz
 #define BATTERY_STATE_PUBLISH_FREQUENCY        30   //hz
 #define MAGNETIC_FIELD_PUBLISH_FREQUENCY       30   //hz
@@ -110,15 +110,16 @@
 #define ca 0.7071
 
 #define rb 0.14
+//#define rb 0.1105
 #define rw 0.05
 #define c_ 0.28
 #define Gama1 2.0
 #define Gama2 1.35//1.35//0.8//
 #define k1 8//10
 #define kbeta  1.3//1.3//
-#define Ib 0.0525
+#define Ib 0.0270
 #define IB 0.0152
-#define mb 6.577
+#define mb 3
 #define mB 2.54
 #define alpha Ib+(mb+mB)*rb*rb
 #define beta_ mB*rb*0.185

@@ -75,8 +75,8 @@ mtx_type Zout_y  [1];
 mtx_type out_y   [1];
 mtx_type maxVal = 2;  // maxValimum random matrix entry range
 #define eta 0.0001
-double Kp=23.5;
-double Ki=3.5;
+double Kp=0.0;
+double Ki=0.0;
 float BLS_limit = 0.5;
 void setup()
 {
@@ -254,7 +254,15 @@ void controlOmni()
     Kp=6.5;Ki=2.5;   
     Tx=((Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.0*(vx-goal_velocity_from_cmd[0])/rb)+(0.7*(position_x-xd)/rb));//+BLS_x((0.0-sensors.imu_.rpy[0])*M_PI /180,0.1*sensors.imu_.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
     Ty=-((Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(3.0*(vy-goal_velocity_from_cmd[1])/rb)+(0.7*(position_y-yd)/rb));//+BLS_y((0.0-sensors.imu_.rpy[1])*M_PI /180,0.1*sensors.imu_.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
-    Tz=4.5*(sensors.imu_.rpy[2]-goal_velocity_from_cmd[2])*M_PI /180;
+    if( abs(goal_velocity_from_cmd[2]-sensors.imu_.rpy[2])>180)
+        {if (sensors.imu_.rpy[2]<0)
+            { Tz=4.5*(sensors.imu_.rpy[2]-(goal_velocity_from_cmd[2]-360))*M_PI /180;}
+         else
+             {Tz=4.5*(sensors.imu_.rpy[2]-(goal_velocity_from_cmd[2]+360))*M_PI /180;}
+        }
+    else
+    {Tz=4.5*(sensors.imu_.rpy[2]-goal_velocity_from_cmd[2])*M_PI /180;}
+    //Tz=0;
     wheel_angular_velocity[1] =(2.0*cb)/(3.0*ca)*Ty-(2.0*sb)/(3.0*ca)*Tx+1/(3.0*sa)*Tz;
     wheel_angular_velocity[0] = (-cb+sqrt(3)*sb)/(3*ca)*Ty+(sb+sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz; 
     wheel_angular_velocity[2] = -(cb+sqrt(3)*sb)/(3*ca)*Ty+(sb-sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz;
