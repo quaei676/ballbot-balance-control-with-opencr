@@ -17,21 +17,20 @@
 /* Authors: Yoonseok Pyo, Leon Jung, Darby Lim, HanCheol Cho */
 //////////////////////////////////////////////////////////////
 #include <ros2arduino.h>
-//#include <TurtleBot3_ROS2.h>
 
 //#include <std_msgs/Bool.hpp>
 //#include <std_msgs/Empty.hpp>
-////#include <std_msgs/Int32.hpp>
+//#include <std_msgs/Int32.hpp>
 //#include <sensor_msgs/Imu.hpp>
 //#include <sensor_msgs/JointState.hpp>
-////#include <sensor_msgs/BatteryState.hpp>
-////#include <sensor_msgs/MagneticField.hpp>
-////#include <geometry_msgs/Vector3.hpp>
+//#include <sensor_msgs/BatteryState.hpp>
+//#include <sensor_msgs/MagneticField.hpp>
+//#include <geometry_msgs/Vector3.hpp>
 //#include <geometry_msgs/Twist.hpp>
-////#include <tf/tf.hpp>
-////#include <tf/transform_broadcaster.hpp>
+//#include <tf/tf.hpp>
+//#include <tf/transform_broadcaster.hpp>
 //#include <nav_msgs/Odometry.hpp>
-//
+////
 //#include <turtlebot3_msgs/SensorState.hpp>
 //#include <turtlebot3_msgs/Sound.hpp>
 //#include <turtlebot3_msgs/VersionInfo.hpp>
@@ -211,8 +210,8 @@ uint8_t battery_state = 0;
 char get_prefix[10];
 char* get_tf_prefix = get_prefix;
 
-char odom_header_frame_id[30];
-char odom_child_frame_id[30];
+char odom_header_frame_id[64];
+char odom_child_frame_id[64];
 
 char imu_frame_id[30];
 char mag_frame_id[30];
@@ -233,6 +232,8 @@ void sendDebuglog(void);
 
 
 void publishOdometry(nav_msgs::Odometry* msg, void* arg);
+//void publishOdometry(geometry_msgs::Twist* msg, void* arg);
+
 void publishImu(sensor_msgs::Imu* msg, void* arg);
 void publishJointState(sensor_msgs::JointState* msg, void* arg);
 void publishSensorState(turtlebot3_msgs::SensorState* msg, void* arg);
@@ -304,6 +305,7 @@ private:
 
   /* Publisher Pointer */
   ros2::Publisher<nav_msgs::Odometry>*            odom_pub_;
+  //ros2::Publisher<geometry_msgs::Twist>*            odom_pub_;
   ros2::Publisher<sensor_msgs::Imu>*              imu_pub_;
   
   //ros2::Publisher<sensor_msgs::BatteryState>*     battery_state_pub_;

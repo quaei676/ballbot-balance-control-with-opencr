@@ -119,6 +119,8 @@ void setup()
   sprintf(imu_frame_id, "imu_link");
   sprintf(joint_state_header_frame_id, "base_link");
   sprintf(sensor_state_header_frame_id, "sensor_state");
+  sprintf(odom_header_frame_id, "odom");
+  sprintf(odom_child_frame_id, "base_footprint"); 
   // Start Dynamixel Control Interrupt
   //startDynamixelControlInterrupt();
 }
@@ -262,7 +264,6 @@ void controlOmni()
         }
     else
     {Tz=4.5*(sensors.imu_.rpy[2]-goal_velocity_from_cmd[2])*M_PI /180;}
-    //Tz=0;
     wheel_angular_velocity[1] =(2.0*cb)/(3.0*ca)*Ty-(2.0*sb)/(3.0*ca)*Tx+1/(3.0*sa)*Tz;
     wheel_angular_velocity[0] = (-cb+sqrt(3)*sb)/(3*ca)*Ty+(sb+sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz; 
     wheel_angular_velocity[2] = -(cb+sqrt(3)*sb)/(3*ca)*Ty+(sb-sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz;
@@ -360,7 +361,6 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   position_y=position_y+(0.05)/(3*ca)*TICK2RAD *(-2*last_diff_tick[SECOND]+last_diff_tick[FIRST]+last_diff_tick[THIRD])*0.62;
   xd=xd+(step_time*0.001)*goal_velocity_from_cmd[0];
   yd=yd+(step_time*0.001)*goal_velocity_from_cmd[1];
-  sumx_err=sumx_err+(position_x-xd)*step_time*0.001;
   odom_pose[0]=position_x;
   odom_pose[1]=position_y;
   odom_pose[2]=sensors.imu_.rpy[2];
@@ -513,8 +513,10 @@ void publishOdometry(nav_msgs::Odometry* msg, void* arg)
 {
   (void)(arg);
   msg->header.stamp            = ros2::now();
+  sprintf(odom_header_frame_id, "odom");
+//  sprintf(odom_child_frame_id, "base_footprint"); 
   strcpy(msg->header.frame_id, odom_header_frame_id);
-  strcpy(msg->child_frame_id, odom_child_frame_id);
+  strcpy(msg->child_frame_id, odom_child_frame_id); 
   msg->pose.pose.position.x    = odom_pose[0];
   msg->pose.pose.position.y    = odom_pose[1];
   msg->pose.pose.position.z    = odom_pose[2];
@@ -524,7 +526,19 @@ void publishOdometry(nav_msgs::Odometry* msg, void* arg)
   msg->pose.pose.orientation.z = 0;
   msg->pose.pose.orientation.w = 0;
   msg->twist.twist.linear.x    = odom_vel[0];
-  msg->twist.twist.linear.y    = odom_vel[2];
+  msg->twist.twist.linear.y    = odom_vel[1];
+  msg->twist.twist.linear.z    = 0;
+  msg->twist.twist.angular.x   = 0;
+  msg->twist.twist.angular.y   = 0;
+  msg->twist.twist.angular.z   = odom_vel[2];
+
+//    msg->linear.x    = odom_pose[0];
+//    msg->linear.y    = odom_pose[1];
+//    msg->linear.z    = odom_pose[2];
+//    msg->angular.x    = 0;
+//    msg->angular.y    = 0;
+//    msg->angular.z    = 0;
+
 }
 void subscribeCmdVel(geometry_msgs::Twist* msg, void* arg)
 {
