@@ -509,22 +509,30 @@ void publishImu(sensor_msgs::Imu* msg, void* arg)
 
 
 //Odometry : 
-void publishOdometry(nav_msgs::Odometry* msg, void* arg)
+void publishOdometry(geometry_msgs::Pose* msg, void* arg)
 {
   (void)(arg);
-  msg->header.stamp            = ros2::now();
-  strcpy(msg->header.frame_id, odom_header_frame_id);
-  strcpy(msg->child_frame_id, odom_child_frame_id);
-  msg->pose.pose.position.x    = odom_pose[0];
-  msg->pose.pose.position.y    = odom_pose[1];
-  msg->pose.pose.position.z    = odom_pose[2];
+//  msg->header.stamp            = ros2::now();
+//  strcpy(msg->header.frame_id, odom_header_frame_id);
+//  strcpy(msg->child_frame_id, odom_child_frame_id);
+//  msg->pose.pose.position.x    = odom_pose[0];
+//  msg->pose.pose.position.y    = odom_pose[1];
+//  msg->pose.pose.position.z    = odom_pose[2];
+//  //msg->pose.pose.orientation = tf::createQuaternionFromYaw(odom_pose[2]);
+//  msg->pose.pose.orientation.x = 0;
+//  msg->pose.pose.orientation.y = 0;
+//  msg->pose.pose.orientation.z = 0;
+//  msg->pose.pose.orientation.w = 0;
+//  msg->twist.twist.linear.x    = odom_vel[0];
+//  msg->twist.twist.linear.y    = odom_vel[2];
+  msg->position.x    = odom_pose[0];
+  msg->position.y    = odom_pose[1];
+  msg->position.z    = odom_pose[2];
   //msg->pose.pose.orientation = tf::createQuaternionFromYaw(odom_pose[2]);
-  msg->pose.pose.orientation.x = 0;
-  msg->pose.pose.orientation.y = 0;
-  msg->pose.pose.orientation.z = 0;
-  msg->pose.pose.orientation.w = 0;
-  msg->twist.twist.linear.x    = odom_vel[0];
-  msg->twist.twist.linear.y    = odom_vel[2];
+  msg->orientation.x = odom_vel[0];
+  msg->orientation.y = odom_vel[1];
+  msg->orientation.z = 0;
+  msg->orientation.w = 0;
 }
 void subscribeCmdVel(geometry_msgs::Twist* msg, void* arg)
 {

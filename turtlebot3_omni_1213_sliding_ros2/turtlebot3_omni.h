@@ -232,7 +232,8 @@ void sendLogMsg(void);
 void sendDebuglog(void);
 
 
-void publishOdometry(nav_msgs::Odometry* msg, void* arg);
+void publishOdometry(geometry_msgs::Pose* msg, void* arg);
+//void publishOdometry(nav_msgs::Odometry* msg, void* arg);
 void publishImu(sensor_msgs::Imu* msg, void* arg);
 void publishJointState(sensor_msgs::JointState* msg, void* arg);
 void publishSensorState(turtlebot3_msgs::SensorState* msg, void* arg);
@@ -258,7 +259,8 @@ public:
     * Publisher
     *******************************************************************************/
     // // Odometry of Turtlebot3
-    odom_pub_          = this->createPublisher<nav_msgs::Odometry>("odom");
+    odom_pub_          = this->createPublisher<geometry_msgs::Pose>("odom");
+    //odom_pub_          = this->createPublisher<nav_msgs::Odometry>("odom");
     this->createWallFreq(ODOMETRY_PUBLISH_FREQUENCY, (ros2::CallbackFunc)publishOdometry, NULL, odom_pub_);
     DEBUG_PRINT("\r\n [Publisher Create]   /odom           : "); DEBUG_PRINT((odom_pub_!=NULL?"Success":"Fail")); DEBUG_PRINT(this->err_code);
 
@@ -303,7 +305,8 @@ public:
 private:
 
   /* Publisher Pointer */
-  ros2::Publisher<nav_msgs::Odometry>*            odom_pub_;
+  ros2::Publisher<geometry_msgs::Pose>*            odom_pub_;
+  //ros2::Publisher<nav_msgs::Odometry>*            odom_pub_;
   ros2::Publisher<sensor_msgs::Imu>*              imu_pub_;
   
   //ros2::Publisher<sensor_msgs::BatteryState>*     battery_state_pub_;
