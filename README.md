@@ -1,7 +1,7 @@
 # ballbot-balance-control-with-opencr  
-opencr version:v1.4.5＜/br＞
-ros2arduino version:v0.0.9＜/br＞
-Maybe the odom msg has some problem, so I the use pose msg.＜/br＞
+opencr version:v1.4.5</br>
+ros2arduino version:v0.0.9</br>
+Maybe the odom msg has some problem, so I the use pose msg</br>
 blancecontrol ros2  
 Reference:https://github.com/ROBOTIS-GIT/ros2arduino  
 Reference:turtlebot3 burger core (ros2)  
