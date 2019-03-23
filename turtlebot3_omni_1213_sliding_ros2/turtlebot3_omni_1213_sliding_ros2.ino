@@ -525,9 +525,9 @@ void publishOdometry(geometry_msgs::Pose* msg, void* arg)
 //  msg->pose.pose.orientation.w = 0;
 //  msg->twist.twist.linear.x    = odom_vel[0];
 //  msg->twist.twist.linear.y    = odom_vel[2];
-  msg->position.x    = odom_pose[0];
-  msg->position.y    = odom_pose[1];
-  msg->position.z    = odom_pose[2];
+  msg->position.x    = odom_t265[0];
+  msg->position.y    = odom_t265[1];
+  msg->position.z    = odom_t265[2];
   //msg->pose.pose.orientation = tf::createQuaternionFromYaw(odom_pose[2]);
   msg->orientation.x = odom_vel[0];
   msg->orientation.y = odom_vel[1];
@@ -540,4 +540,11 @@ void subscribeCmdVel(geometry_msgs::Twist* msg, void* arg)
   goal_velocity_from_cmd[0]  = constrain(msg->linear.x,  MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
   goal_velocity_from_cmd[1]  = constrain(msg->linear.y,  MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
   goal_velocity_from_cmd[2]  = msg->angular.z;
+}
+void subscribeodom_t265(geometry_msgs::Pose* msg, void* arg)
+{
+  (void)(arg);
+  odom_t265[0]  =msg->position.x;
+  odom_t265[1]  = msg->position.y;
+  odom_t265[2]  = msg->position.z;
 }

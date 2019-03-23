@@ -177,6 +177,7 @@ Turtlebot3Diagnosis diagnosis;
 float goal_velocity[2] = {0.0, 0.0};
 float goal_velocity_from_button[2] = {0.0, 0.0};
 float goal_velocity_from_cmd[3] = {0.0, 0.0, 0.0};
+float odom_t265[3] = {0.0, 0.0, 0.0};
 
 /*******************************************************************************
 * SoftwareTimer of Turtlebot3
@@ -241,6 +242,8 @@ void publishVersionInfo(turtlebot3_msgs::VersionInfo* msg, void* arg);
 
 
 void subscribeCmdVel(geometry_msgs::Twist* msg, void* arg);
+void subscribeodom_t265(geometry_msgs::Pose* msg, void* arg);
+
 void subscribeSound(turtlebot3_msgs::Sound* msg, void* arg);
 void subscribeReset(std_msgs::Empty* msg, void* arg);
 void subscribeTimeSync(builtin_interfaces::Time* msg, void* arg);
@@ -289,6 +292,7 @@ public:
     * Subscriber
     *******************************************************************************/
     cmd_vel_sub_       = this->createSubscriber<geometry_msgs::Twist>("cmd_vel", (ros2::CallbackFunc)subscribeCmdVel, NULL);
+    odom_t265_sub_       = this->createSubscriber<geometry_msgs::Pose>("T265_odom", (ros2::CallbackFunc)subscribeodom_t265, NULL);
     /*DEBUG_PRINT("\r\n [Subscriber Create]  /cmd_vel        : "); DEBUG_PRINT((cmd_vel_sub_!=NULL?"Success":"Fail")); DEBUG_PRINT(this->err_code);
 
     sound_sub_         = this->createSubscriber<turtlebot3_msgs::Sound>("sound", (ros2::CallbackFunc)subscribeSound, NULL);
@@ -315,6 +319,7 @@ private:
 
   /* Subscriber Pointer */
   ros2::Subscriber<geometry_msgs::Twist>*         cmd_vel_sub_;
+  ros2::Subscriber<geometry_msgs::Pose>*       odom_t265_sub_;
   //ros2::Subscriber<turtlebot3_msgs::Sound>*       sound_sub_;
   //ros2::Subscriber<std_msgs::Bool>*               motor_power_sub_;
   ros2::Subscriber<std_msgs::Empty>*              reset_sub_;
