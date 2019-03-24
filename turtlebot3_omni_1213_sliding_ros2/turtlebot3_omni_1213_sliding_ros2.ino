@@ -369,78 +369,78 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   odom_vel[2] = 0.0;
 
 }
-double BLS_x(double u1,double u2)
-{
-  u[0][0]=u1;
-  u[0][1]=u2;
-  Matrix.Multiply((mtx_type*)u, (mtx_type*)w1_x, 1, 2, N, (mtx_type*)Z_x);
-  Matrix.Add((mtx_type*) Z_x, (mtx_type*) b1_x, 1, N, (mtx_type*) Z_x);
-  Matrix.Multiply((mtx_type*)Z_x, (mtx_type*)wf_x, 1, N, N, (mtx_type*)H_x);
-  Matrix.Add((mtx_type*) H_x, (mtx_type*) bf_x, 1, N, (mtx_type*) H_x);
-  Matrix.tanh((mtx_type*) H_x, 1, N);
-  Matrix.Multiply((mtx_type*)Z_x, (mtx_type*)wz_x, 1, N, 1, (mtx_type*)Zout_x);
-  Matrix.Multiply((mtx_type*)H_x, (mtx_type*)wh_x, 1, N, 1, (mtx_type*)Hout_x);
-  Matrix.Add((mtx_type*) Zout_x, (mtx_type*) Hout_x, 1, 1, (mtx_type*) out_x);
-  ///////////////////////////////////////////////////////////////////////////////
-  mtx_type H_2 [1][N];
-  Matrix.Dotproduct((mtx_type*) H_x, (mtx_type*) H_x, 1, N,(mtx_type*) H_2 );
-  Matrix.Scale((mtx_type*) H_2, 1, N,(u[0][0]+u[0][1])*eta );
-  Matrix.Scalesubtract((u[0][0]+u[0][1])*eta, (mtx_type*)H_2, 1, N, (mtx_type*) H_2);
-  mtx_type H_2_T [N][1];
-    /////////////////////////////////////////////////////////////////////////////////
-  Matrix.Transpose((mtx_type*)H_2, 1, N, (mtx_type*) H_2_T);
-  Matrix.Dotproduct((mtx_type*) H_2_T, (mtx_type*) wh_x, 1, N,(mtx_type*) H_2_T );
-  mtx_type diff_wf_x [N][N];
-  Matrix.Multiply((mtx_type*)H_2_T, (mtx_type*)Z_x, N, 1, N, (mtx_type*)diff_wf_x);
-  Matrix.Subtract((mtx_type*) wf_x, (mtx_type*)diff_wf_x, N, N, (mtx_type*) wf_x);
-  //////////////////////////////////////////////////////////////////////////////////
-  Matrix.Dotproduct((mtx_type*) H_2, (mtx_type*) wh_x, 1, N,(mtx_type*) H_2 );
-  Matrix.Subtract((mtx_type*) bf_x, (mtx_type*)H_2, 1, N, (mtx_type*) bf_x);
-  //////////////////////////////////////////////////////////
-  Matrix.Scale((mtx_type*) H_x, 1, N,(u[0][0]+u[0][1])*eta );
-  Matrix.Scale((mtx_type*) Z_x, 1, N,(u[0][0]+u[0][1])*eta );
-  Matrix.Subtract((mtx_type*) wz_x, (mtx_type*)Z_x, 1, N, (mtx_type*) wz_x);
-  Matrix.Subtract((mtx_type*) wh_x, (mtx_type*)H_x, 1, N, (mtx_type*) wh_x);
-  if (out_x[0]>BLS_limit) out_x[0]=BLS_limit;
-  else if (out_x[0]<-1.0*BLS_limit) out_x[0]=-1.0*BLS_limit; 
-  return out_x[0];
-}
-double BLS_y(double u1,double u2)
-{
-  u[0][0]=u1;
-  u[0][1]=u2;
-  Matrix.Multiply((mtx_type*)u, (mtx_type*)w1_y, 1, 2, N, (mtx_type*)Z_y);
-  Matrix.Add((mtx_type*) Z_y, (mtx_type*) b1_y, 1, N, (mtx_type*) Z_y);
-  Matrix.Multiply((mtx_type*)Z_y, (mtx_type*)wf_y, 1, N, N, (mtx_type*)H_y);
-  Matrix.Add((mtx_type*) H_y, (mtx_type*) bf_y, 1, N, (mtx_type*) H_y);
-  Matrix.tanh((mtx_type*) H_y, 1, N);
-  Matrix.Multiply((mtx_type*)Z_y, (mtx_type*)wz_y, 1, N, 1, (mtx_type*)Zout_y);
-  Matrix.Multiply((mtx_type*)H_y, (mtx_type*)wh_y, 1, N, 1, (mtx_type*)Hout_y);
-  Matrix.Add((mtx_type*) Zout_y, (mtx_type*) Hout_y, 1, 1, (mtx_type*) out_y);
-  ///////////////////////////////////////////////////////////////////////////////
-  mtx_type H_2 [1][N];
-  Matrix.Dotproduct((mtx_type*) H_y, (mtx_type*) H_y, 1, N,(mtx_type*) H_2 );
-  Matrix.Scale((mtx_type*) H_2, 1, N,(u[0][0]+u[0][1])*eta );
-  Matrix.Scalesubtract((u[0][0]+u[0][1])*eta, (mtx_type*)H_2, 1, N, (mtx_type*) H_2);
-  mtx_type H_2_T [N][1];
-    /////////////////////////////////////////////////////////////////////////////////
-  Matrix.Transpose((mtx_type*)H_2, 1, N, (mtx_type*) H_2_T);
-  Matrix.Dotproduct((mtx_type*) H_2_T, (mtx_type*) wh_y, 1, N,(mtx_type*) H_2_T );
-  mtx_type diff_wf_y [N][N];
-  Matrix.Multiply((mtx_type*)H_2_T, (mtx_type*)Z_y, N, 1, N, (mtx_type*)diff_wf_y);
-  Matrix.Subtract((mtx_type*) wf_y, (mtx_type*)diff_wf_y, N, N, (mtx_type*) wf_y);
-  //////////////////////////////////////////////////////////////////////////////////
-  Matrix.Dotproduct((mtx_type*) H_2, (mtx_type*) wh_y, 1, N,(mtx_type*) H_2 );
-  Matrix.Subtract((mtx_type*) bf_y, (mtx_type*)H_2, 1, N, (mtx_type*) bf_y);
-  //////////////////////////////////////////////////////////
-  Matrix.Scale((mtx_type*) H_y, 1, N,(u[0][0]+u[0][1])*eta );
-  Matrix.Scale((mtx_type*) Z_y, 1, N,(u[0][0]+u[0][1])*eta );
-  Matrix.Subtract((mtx_type*) wz_y, (mtx_type*)Z_x, 1, N, (mtx_type*) wz_y);
-  Matrix.Subtract((mtx_type*) wh_y, (mtx_type*)H_x, 1, N, (mtx_type*) wh_y);
-  if (out_y[0]>BLS_limit) out_y[0]=BLS_limit;
-  else if (out_y[0]<-1.0*BLS_limit) out_y[0]=-1.0*BLS_limit;    
-  return out_y[0];
-}
+//double BLS_x(double u1,double u2)
+//{
+//  u[0][0]=u1;
+//  u[0][1]=u2;
+//  Matrix.Multiply((mtx_type*)u, (mtx_type*)w1_x, 1, 2, N, (mtx_type*)Z_x);
+//  Matrix.Add((mtx_type*) Z_x, (mtx_type*) b1_x, 1, N, (mtx_type*) Z_x);
+//  Matrix.Multiply((mtx_type*)Z_x, (mtx_type*)wf_x, 1, N, N, (mtx_type*)H_x);
+//  Matrix.Add((mtx_type*) H_x, (mtx_type*) bf_x, 1, N, (mtx_type*) H_x);
+//  Matrix.tanh((mtx_type*) H_x, 1, N);
+//  Matrix.Multiply((mtx_type*)Z_x, (mtx_type*)wz_x, 1, N, 1, (mtx_type*)Zout_x);
+//  Matrix.Multiply((mtx_type*)H_x, (mtx_type*)wh_x, 1, N, 1, (mtx_type*)Hout_x);
+//  Matrix.Add((mtx_type*) Zout_x, (mtx_type*) Hout_x, 1, 1, (mtx_type*) out_x);
+//  ///////////////////////////////////////////////////////////////////////////////
+//  mtx_type H_2 [1][N];
+//  Matrix.Dotproduct((mtx_type*) H_x, (mtx_type*) H_x, 1, N,(mtx_type*) H_2 );
+//  Matrix.Scale((mtx_type*) H_2, 1, N,(u[0][0]+u[0][1])*eta );
+//  Matrix.Scalesubtract((u[0][0]+u[0][1])*eta, (mtx_type*)H_2, 1, N, (mtx_type*) H_2);
+//  mtx_type H_2_T [N][1];
+//    /////////////////////////////////////////////////////////////////////////////////
+//  Matrix.Transpose((mtx_type*)H_2, 1, N, (mtx_type*) H_2_T);
+//  Matrix.Dotproduct((mtx_type*) H_2_T, (mtx_type*) wh_x, 1, N,(mtx_type*) H_2_T );
+//  mtx_type diff_wf_x [N][N];
+//  Matrix.Multiply((mtx_type*)H_2_T, (mtx_type*)Z_x, N, 1, N, (mtx_type*)diff_wf_x);
+//  Matrix.Subtract((mtx_type*) wf_x, (mtx_type*)diff_wf_x, N, N, (mtx_type*) wf_x);
+//  //////////////////////////////////////////////////////////////////////////////////
+//  Matrix.Dotproduct((mtx_type*) H_2, (mtx_type*) wh_x, 1, N,(mtx_type*) H_2 );
+//  Matrix.Subtract((mtx_type*) bf_x, (mtx_type*)H_2, 1, N, (mtx_type*) bf_x);
+//  //////////////////////////////////////////////////////////
+//  Matrix.Scale((mtx_type*) H_x, 1, N,(u[0][0]+u[0][1])*eta );
+//  Matrix.Scale((mtx_type*) Z_x, 1, N,(u[0][0]+u[0][1])*eta );
+//  Matrix.Subtract((mtx_type*) wz_x, (mtx_type*)Z_x, 1, N, (mtx_type*) wz_x);
+//  Matrix.Subtract((mtx_type*) wh_x, (mtx_type*)H_x, 1, N, (mtx_type*) wh_x);
+//  if (out_x[0]>BLS_limit) out_x[0]=BLS_limit;
+//  else if (out_x[0]<-1.0*BLS_limit) out_x[0]=-1.0*BLS_limit; 
+//  return out_x[0];
+//}
+//double BLS_y(double u1,double u2)
+//{
+//  u[0][0]=u1;
+//  u[0][1]=u2;
+//  Matrix.Multiply((mtx_type*)u, (mtx_type*)w1_y, 1, 2, N, (mtx_type*)Z_y);
+//  Matrix.Add((mtx_type*) Z_y, (mtx_type*) b1_y, 1, N, (mtx_type*) Z_y);
+//  Matrix.Multiply((mtx_type*)Z_y, (mtx_type*)wf_y, 1, N, N, (mtx_type*)H_y);
+//  Matrix.Add((mtx_type*) H_y, (mtx_type*) bf_y, 1, N, (mtx_type*) H_y);
+//  Matrix.tanh((mtx_type*) H_y, 1, N);
+//  Matrix.Multiply((mtx_type*)Z_y, (mtx_type*)wz_y, 1, N, 1, (mtx_type*)Zout_y);
+//  Matrix.Multiply((mtx_type*)H_y, (mtx_type*)wh_y, 1, N, 1, (mtx_type*)Hout_y);
+//  Matrix.Add((mtx_type*) Zout_y, (mtx_type*) Hout_y, 1, 1, (mtx_type*) out_y);
+//  ///////////////////////////////////////////////////////////////////////////////
+//  mtx_type H_2 [1][N];
+//  Matrix.Dotproduct((mtx_type*) H_y, (mtx_type*) H_y, 1, N,(mtx_type*) H_2 );
+//  Matrix.Scale((mtx_type*) H_2, 1, N,(u[0][0]+u[0][1])*eta );
+//  Matrix.Scalesubtract((u[0][0]+u[0][1])*eta, (mtx_type*)H_2, 1, N, (mtx_type*) H_2);
+//  mtx_type H_2_T [N][1];
+//    /////////////////////////////////////////////////////////////////////////////////
+//  Matrix.Transpose((mtx_type*)H_2, 1, N, (mtx_type*) H_2_T);
+//  Matrix.Dotproduct((mtx_type*) H_2_T, (mtx_type*) wh_y, 1, N,(mtx_type*) H_2_T );
+//  mtx_type diff_wf_y [N][N];
+//  Matrix.Multiply((mtx_type*)H_2_T, (mtx_type*)Z_y, N, 1, N, (mtx_type*)diff_wf_y);
+//  Matrix.Subtract((mtx_type*) wf_y, (mtx_type*)diff_wf_y, N, N, (mtx_type*) wf_y);
+//  //////////////////////////////////////////////////////////////////////////////////
+//  Matrix.Dotproduct((mtx_type*) H_2, (mtx_type*) wh_y, 1, N,(mtx_type*) H_2 );
+//  Matrix.Subtract((mtx_type*) bf_y, (mtx_type*)H_2, 1, N, (mtx_type*) bf_y);
+//  //////////////////////////////////////////////////////////
+//  Matrix.Scale((mtx_type*) H_y, 1, N,(u[0][0]+u[0][1])*eta );
+//  Matrix.Scale((mtx_type*) Z_y, 1, N,(u[0][0]+u[0][1])*eta );
+//  Matrix.Subtract((mtx_type*) wz_y, (mtx_type*)Z_x, 1, N, (mtx_type*) wz_y);
+//  Matrix.Subtract((mtx_type*) wh_y, (mtx_type*)H_x, 1, N, (mtx_type*) wh_y);
+//  if (out_y[0]>BLS_limit) out_y[0]=BLS_limit;
+//  else if (out_y[0]<-1.0*BLS_limit) out_y[0]=-1.0*BLS_limit;    
+//  return out_y[0];
+//}
 /*******************************************************************************
 * Start Gyro Calibration
 *******************************************************************************/
@@ -510,6 +510,7 @@ void publishImu(sensor_msgs::Imu* msg, void* arg)
 
 //Odometry : 
 void publishOdometry(geometry_msgs::Pose* msg, void* arg)
+//void publishOdometry(nav_msgs::Odometry* msg, void* arg)
 {
   (void)(arg);
 //  msg->header.stamp            = ros2::now();
