@@ -46,35 +46,6 @@ double vy               =0.0;
 double xd               =0.0;
 double yd               =0.0;
 double vd               =0.0;
-double sumx_err =0.0;
-/////////Matrix define///////////////
-#include <MatrixMath.h>
-#define N  (10)
-mtx_type u[1][2];
-mtx_type w1_x[2][N];
-mtx_type b1_x[1][N];
-mtx_type Z_x [1][N];
-mtx_type wf_x [N][N];
-mtx_type bf_x    [1][N];
-mtx_type H_x     [1][N];
-mtx_type wz_x    [N][1];
-mtx_type wh_x    [N][1];
-mtx_type Hout_x  [1];
-mtx_type Zout_x  [1];
-mtx_type out_x   [1];
-mtx_type w1_y[2][N];
-mtx_type b1_y[1][N];
-mtx_type Z_y [1][N];
-mtx_type wf_y [N][N];
-mtx_type bf_y    [1][N];
-mtx_type H_y     [1][N];
-mtx_type wz_y    [N][1];
-mtx_type wh_y    [N][1];
-mtx_type Hout_y  [1];
-mtx_type Zout_y  [1];
-mtx_type out_y   [1];
-mtx_type maxVal = 2;  // maxValimum random matrix entry range
-#define eta 0.0001
 double Kp=0.0;
 double Ki=0.0;
 float BLS_limit = 0.5;
@@ -86,27 +57,6 @@ void setup()
     DEBUG_PRINT(".");
   }
   pinMode(LED_WORKING_CHECK, OUTPUT);
-  // Initialize matrices
-  for (int i = 0; i < N; i++)
-  {
-    w1_x[0][i] = random(0, maxVal)  / maxVal; 
-    w1_x[1][i] = random(0, maxVal)  / maxVal; 
-    b1_x[0][i] = random(0, maxVal)  / maxVal;
-    bf_x[0][i] = random(0, maxVal)  / maxVal;
-    wz_x[i][0] = random(0, maxVal)  / maxVal;
-    wh_x[i][0] = random(0, maxVal)  / maxVal;
-    w1_y[0][i] = random(0, maxVal)  / maxVal; 
-    w1_y[1][i] = random(0, maxVal)  / maxVal; 
-    b1_y[0][i] = random(0, maxVal)  / maxVal;
-    bf_y[0][i] = random(0, maxVal)  / maxVal;
-    wz_y[i][0] = random(0, maxVal)  / maxVal;
-    wh_y[i][0] = random(0, maxVal)  / maxVal;
-    for (int j = 0; j < N; j++)
-    {
-      wf_x[i][j] = random(0, maxVal)  / maxVal; 
-      wf_y[i][j] = random(0, maxVal)  / maxVal; 
-    }
-  }
   // Setting for Dynamixel motors
   motor_driver.init();
   sensors.init();
@@ -119,8 +69,6 @@ void setup()
   sprintf(imu_frame_id, "imu_link");
   sprintf(joint_state_header_frame_id, "base_link");
   sprintf(sensor_state_header_frame_id, "sensor_state");
-  // Start Dynamixel Control Interrupt
-  //startDynamixelControlInterrupt();
 }
 
 void loop()
@@ -144,15 +92,6 @@ void loop()
 
   // Call all the callbacks waiting to be called at that point in time
   ros2::spin(&turtlebot3_node);}
-
-void startDynamixelControlInterrupt()
-{
-  Timer.stop();
-  Timer.setPeriod(CONTROL_PERIOD);           // in microseconds
-  Timer.attachInterrupt(controlOmni);
-  Timer.start();
-  Timer.resume();
-}
 
 /*******************************************************************************
 * Receive RC100 remote controller data
@@ -250,10 +189,9 @@ void controlOmni()
   }
    else
    {
-    //xd=position_x;yd=position_y;
     Kp=6.5;Ki=2.5;   
-    Tx=((Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.0*(vx-goal_velocity_from_cmd[0])/rb)+(0.7*(position_x-xd)/rb));//+BLS_x((0.0-sensors.imu_.rpy[0])*M_PI /180,0.1*sensors.imu_.gyroRaw[0]*(-2000.0*M_PI / 5898240.0));
-    Ty=-((Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(3.0*(vy-goal_velocity_from_cmd[1])/rb)+(0.7*(position_y-yd)/rb));//+BLS_y((0.0-sensors.imu_.rpy[1])*M_PI /180,0.1*sensors.imu_.gyroRaw[1]*(-2000.0*M_PI / 5898240.0));
+    Tx=((Kp*((sensors.imu_.rpy[0]-0.0)*M_PI /180))+(Ki*sensors.imu_.gyroRaw[0]*(2000.0*M_PI / 5898240.0))+(3.0*(vx-goal_velocity_from_cmd[0])/rb)+(0.7*(position_x-xd)/rb));
+    Ty=-((Kp*(sensors.imu_.rpy[1]-0.0)*M_PI /180)+(Ki*sensors.imu_.gyroRaw[1]*(2000.0*M_PI / 5898240.0))+(3.0*(vy-goal_velocity_from_cmd[1])/rb)+(0.7*(position_y-yd)/rb));
     if( abs(goal_velocity_from_cmd[2]-sensors.imu_.rpy[2])>180)
         {if (sensors.imu_.rpy[2]<0)
             { Tz=4.5*(sensors.imu_.rpy[2]-(goal_velocity_from_cmd[2]-360))*M_PI /180;}
@@ -262,7 +200,7 @@ void controlOmni()
         }
     else
     {Tz=4.5*(sensors.imu_.rpy[2]-goal_velocity_from_cmd[2])*M_PI /180;}
-    //Tz=0;
+    //Torque to three wheel velocity
     wheel_angular_velocity[1] =(2.0*cb)/(3.0*ca)*Ty-(2.0*sb)/(3.0*ca)*Tx+1/(3.0*sa)*Tz;
     wheel_angular_velocity[0] = (-cb+sqrt(3)*sb)/(3*ca)*Ty+(sb+sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz; 
     wheel_angular_velocity[2] = -(cb+sqrt(3)*sb)/(3*ca)*Ty+(sb-sqrt(3)*cb)/(3*ca)*Tx+1/(3*sa)*Tz;
@@ -369,78 +307,6 @@ void updateMotorInfo(int32_t first_tick, int32_t second_tick, int32_t third_tick
   odom_vel[2] = 0.0;
 
 }
-//double BLS_x(double u1,double u2)
-//{
-//  u[0][0]=u1;
-//  u[0][1]=u2;
-//  Matrix.Multiply((mtx_type*)u, (mtx_type*)w1_x, 1, 2, N, (mtx_type*)Z_x);
-//  Matrix.Add((mtx_type*) Z_x, (mtx_type*) b1_x, 1, N, (mtx_type*) Z_x);
-//  Matrix.Multiply((mtx_type*)Z_x, (mtx_type*)wf_x, 1, N, N, (mtx_type*)H_x);
-//  Matrix.Add((mtx_type*) H_x, (mtx_type*) bf_x, 1, N, (mtx_type*) H_x);
-//  Matrix.tanh((mtx_type*) H_x, 1, N);
-//  Matrix.Multiply((mtx_type*)Z_x, (mtx_type*)wz_x, 1, N, 1, (mtx_type*)Zout_x);
-//  Matrix.Multiply((mtx_type*)H_x, (mtx_type*)wh_x, 1, N, 1, (mtx_type*)Hout_x);
-//  Matrix.Add((mtx_type*) Zout_x, (mtx_type*) Hout_x, 1, 1, (mtx_type*) out_x);
-//  ///////////////////////////////////////////////////////////////////////////////
-//  mtx_type H_2 [1][N];
-//  Matrix.Dotproduct((mtx_type*) H_x, (mtx_type*) H_x, 1, N,(mtx_type*) H_2 );
-//  Matrix.Scale((mtx_type*) H_2, 1, N,(u[0][0]+u[0][1])*eta );
-//  Matrix.Scalesubtract((u[0][0]+u[0][1])*eta, (mtx_type*)H_2, 1, N, (mtx_type*) H_2);
-//  mtx_type H_2_T [N][1];
-//    /////////////////////////////////////////////////////////////////////////////////
-//  Matrix.Transpose((mtx_type*)H_2, 1, N, (mtx_type*) H_2_T);
-//  Matrix.Dotproduct((mtx_type*) H_2_T, (mtx_type*) wh_x, 1, N,(mtx_type*) H_2_T );
-//  mtx_type diff_wf_x [N][N];
-//  Matrix.Multiply((mtx_type*)H_2_T, (mtx_type*)Z_x, N, 1, N, (mtx_type*)diff_wf_x);
-//  Matrix.Subtract((mtx_type*) wf_x, (mtx_type*)diff_wf_x, N, N, (mtx_type*) wf_x);
-//  //////////////////////////////////////////////////////////////////////////////////
-//  Matrix.Dotproduct((mtx_type*) H_2, (mtx_type*) wh_x, 1, N,(mtx_type*) H_2 );
-//  Matrix.Subtract((mtx_type*) bf_x, (mtx_type*)H_2, 1, N, (mtx_type*) bf_x);
-//  //////////////////////////////////////////////////////////
-//  Matrix.Scale((mtx_type*) H_x, 1, N,(u[0][0]+u[0][1])*eta );
-//  Matrix.Scale((mtx_type*) Z_x, 1, N,(u[0][0]+u[0][1])*eta );
-//  Matrix.Subtract((mtx_type*) wz_x, (mtx_type*)Z_x, 1, N, (mtx_type*) wz_x);
-//  Matrix.Subtract((mtx_type*) wh_x, (mtx_type*)H_x, 1, N, (mtx_type*) wh_x);
-//  if (out_x[0]>BLS_limit) out_x[0]=BLS_limit;
-//  else if (out_x[0]<-1.0*BLS_limit) out_x[0]=-1.0*BLS_limit; 
-//  return out_x[0];
-//}
-//double BLS_y(double u1,double u2)
-//{
-//  u[0][0]=u1;
-//  u[0][1]=u2;
-//  Matrix.Multiply((mtx_type*)u, (mtx_type*)w1_y, 1, 2, N, (mtx_type*)Z_y);
-//  Matrix.Add((mtx_type*) Z_y, (mtx_type*) b1_y, 1, N, (mtx_type*) Z_y);
-//  Matrix.Multiply((mtx_type*)Z_y, (mtx_type*)wf_y, 1, N, N, (mtx_type*)H_y);
-//  Matrix.Add((mtx_type*) H_y, (mtx_type*) bf_y, 1, N, (mtx_type*) H_y);
-//  Matrix.tanh((mtx_type*) H_y, 1, N);
-//  Matrix.Multiply((mtx_type*)Z_y, (mtx_type*)wz_y, 1, N, 1, (mtx_type*)Zout_y);
-//  Matrix.Multiply((mtx_type*)H_y, (mtx_type*)wh_y, 1, N, 1, (mtx_type*)Hout_y);
-//  Matrix.Add((mtx_type*) Zout_y, (mtx_type*) Hout_y, 1, 1, (mtx_type*) out_y);
-//  ///////////////////////////////////////////////////////////////////////////////
-//  mtx_type H_2 [1][N];
-//  Matrix.Dotproduct((mtx_type*) H_y, (mtx_type*) H_y, 1, N,(mtx_type*) H_2 );
-//  Matrix.Scale((mtx_type*) H_2, 1, N,(u[0][0]+u[0][1])*eta );
-//  Matrix.Scalesubtract((u[0][0]+u[0][1])*eta, (mtx_type*)H_2, 1, N, (mtx_type*) H_2);
-//  mtx_type H_2_T [N][1];
-//    /////////////////////////////////////////////////////////////////////////////////
-//  Matrix.Transpose((mtx_type*)H_2, 1, N, (mtx_type*) H_2_T);
-//  Matrix.Dotproduct((mtx_type*) H_2_T, (mtx_type*) wh_y, 1, N,(mtx_type*) H_2_T );
-//  mtx_type diff_wf_y [N][N];
-//  Matrix.Multiply((mtx_type*)H_2_T, (mtx_type*)Z_y, N, 1, N, (mtx_type*)diff_wf_y);
-//  Matrix.Subtract((mtx_type*) wf_y, (mtx_type*)diff_wf_y, N, N, (mtx_type*) wf_y);
-//  //////////////////////////////////////////////////////////////////////////////////
-//  Matrix.Dotproduct((mtx_type*) H_2, (mtx_type*) wh_y, 1, N,(mtx_type*) H_2 );
-//  Matrix.Subtract((mtx_type*) bf_y, (mtx_type*)H_2, 1, N, (mtx_type*) bf_y);
-//  //////////////////////////////////////////////////////////
-//  Matrix.Scale((mtx_type*) H_y, 1, N,(u[0][0]+u[0][1])*eta );
-//  Matrix.Scale((mtx_type*) Z_y, 1, N,(u[0][0]+u[0][1])*eta );
-//  Matrix.Subtract((mtx_type*) wz_y, (mtx_type*)Z_x, 1, N, (mtx_type*) wz_y);
-//  Matrix.Subtract((mtx_type*) wh_y, (mtx_type*)H_x, 1, N, (mtx_type*) wh_y);
-//  if (out_y[0]>BLS_limit) out_y[0]=BLS_limit;
-//  else if (out_y[0]<-1.0*BLS_limit) out_y[0]=-1.0*BLS_limit;    
-//  return out_y[0];
-//}
 /*******************************************************************************
 * Start Gyro Calibration
 *******************************************************************************/
@@ -509,6 +375,7 @@ void publishImu(sensor_msgs::Imu* msg, void* arg)
 
 
 //Odometry : 
+//Now using T265 Odometry on PC
 void publishOdometry(geometry_msgs::Pose* msg, void* arg)
 //void publishOdometry(nav_msgs::Odometry* msg, void* arg)
 {
